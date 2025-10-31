@@ -2,7 +2,7 @@ import userModal from "../modals/userModal.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import transporter from "../Config/nodemailer.js";
+import transporter from "../config/nodemailer.js";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
