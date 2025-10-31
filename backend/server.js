@@ -13,19 +13,42 @@ const app = express()
 const PORT = process.env.PORT ||4000
 connectDB()
 connectCloudinary()
-console.log("Running in", process.env.NODE_ENV, "mode");
-console.log("Mongo URI:", process.env.MONGODB_URI);
+// console.log("Running in", process.env.NODE_ENV, "mode");
+// console.log("Mongo URI:", process.env.MONGODB_URI);
 
 //middlewares
 app.use(express.json())
 //updated on 18-10-25 for cookies
 app.use(cookieParser())
-
+// ✅ Dynamic + Flexible CORS setup
+const allowedOrigins = [
+  process.env.FRONTEND_URL,   // e.g. "https://e-ccomerce-website-frontendd.vercel.app"
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+];
+// app.use(cors({
+//   origin: [
+//     process.env.FRONTEND_URL || "http://localhost:5174",
+//     "http://localhost:5175"
+//   ],
+//   credentials: true,
+// }));
+// ✅ Dynamic CORS Middleware
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || "http://localhost:5174",
-    "http://localhost:5175"
-  ],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow Postman / curl
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||  // allow any vercel domain (future frontend)
+      origin.includes('localhost')
+    ) {
+      return callback(null, true);
+    } else {
+      console.warn(`🚫 Blocked by CORS: ${origin}`);
+      return callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true,
 }));
 
